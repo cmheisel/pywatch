@@ -73,7 +73,7 @@ class WatcherTest(unittest.TestCase):
         self.watcher.monitor()
 
         self.touch("fixtures/a.txt")
-        time.sleep(1)
+        time.sleep(0.5)
         self.assertEqual(1, self.watcher.num_runs)
         
         self.watcher.stop_monitor()

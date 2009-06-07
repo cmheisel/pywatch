@@ -1,32 +1,47 @@
+import datetime
 import os
-import thread
+import threading
 import time
 
 class Watcher(object):
-    def __init__(self, files=None, cmds=None):
+    def __init__(self, files=None, cmds=None, verbose=False):
         self.files = [] 
         self.cmds = []
         self.num_runs = 0
         self.mtimes = {}
         self._monitor_continously = False 
+        self._monitor_thread = None
+        self.verbose = verbose
     
         if files: self.add_files(*files)
         if cmds: self.add_cmds(*cmds)
 
     def monitor(self):
+        #We only want one thread, dear god
+        self.stop_monitor()
+
         self._monitor_continously = True
-        self._monitor_thread = thread.start_new_thread(self._monitor_till_stopped, ())
+        self._monitor_thread = threading.Thread(target=self._monitor_till_stopped)
+        self._monitor_thread.start()
+
+    def run_monitor(self):
+        """Called by main thread methods like __main__ so Ctrl-C works"""
+        self.monitor()
+        try:
+            while self._monitor_continously:
+                time.sleep(.02)
+        except KeyboardInterrupt:
+            self.stop_monitor()
 
     def stop_monitor(self):
-        self._monitor_continously = False
+        if self._monitor_thread and self._monitor_thread.isAlive():
+            self._monitor_continously = False
+            self._monitor_thread.join(0.05)
 
     def _monitor_till_stopped(self):
         while self._monitor_continously:
-            try:
-                self.monitor_once()
-                time.sleep(.05)
-            except KeyboardInterrupt:
-                return True
+            self.monitor_once()
+            time.sleep(.01)
 
     def monitor_once(self, execute=True):
         for f in self.files:
@@ -42,6 +57,7 @@ class Watcher(object):
                     break
 
     def execute(self):
+        if self.verbose: print "Running commands at %s" % (datetime.datetime.now(), )
         [ os.system(cmd) for cmd in self.cmds ]
         self.num_runs += 1
         return self.num_runs
