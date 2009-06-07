@@ -1,4 +1,5 @@
 import os
+import time
 import unittest
 
 from watcher import Watcher
@@ -44,7 +45,7 @@ class WatcherTest(unittest.TestCase):
 
 
     def test_file_monitoring(self):
-        """Files that are touched should trigger an execution. wathcer.num_runs
+        """Files that are touched should trigger an execution. watcher.num_runs
         should reflect the number of times this Watcher instance has executed
         its command list."""
 
@@ -63,6 +64,19 @@ class WatcherTest(unittest.TestCase):
 
         self.watcher.monitor_once()
         self.assertEqual(2, self.watcher.num_runs)
+
+    def test_continous_file_monitoring(self):
+        """Watcher.monitor() should run continously executing the command
+        list whenever files change."""
+
+        self.watcher.add_files("fixtures/a.txt", "fixtures/b.txt", "fixtures/c.txt")
+        self.watcher.monitor()
+
+        self.touch("fixtures/a.txt")
+        time.sleep(1)
+        self.assertEqual(1, self.watcher.num_runs)
+        
+        self.watcher.stop_monitor()
 
 if __name__ == "__main__":
     unittest.main()

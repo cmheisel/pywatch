@@ -1,4 +1,5 @@
 import os
+import thread
 import time
 
 class Watcher(object):
@@ -7,15 +8,23 @@ class Watcher(object):
         self.cmds = []
         self.num_runs = 0
         self.mtimes = {}
-
+        self._monitor_continously = False 
+    
         if files: self.add_files(*files)
         if cmds: self.add_cmds(*cmds)
 
     def monitor(self):
-        while True:
+        self._monitor_continously = True
+        self._monitor_thread = thread.start_new_thread(self._monitor_till_stopped, ())
+
+    def stop_monitor(self):
+        self._monitor_continously = False
+
+    def _monitor_till_stopped(self):
+        while self._monitor_continously:
             try:
                 self.monitor_once()
-                time.sleep(1)
+                time.sleep(.05)
             except KeyboardInterrupt:
                 return True
 
