@@ -12,7 +12,7 @@ class WatcherTest(unittest.TestCase):
         self.watcher = Watcher(cmds = ["python fixtures/sample.py", ])
 
     def tearDown(self):
-        del(self.watcher)
+        del self.watcher
 
     def test_add_files(self):
         """When files are added, either at init or via add_files
@@ -73,7 +73,7 @@ class WatcherTest(unittest.TestCase):
         self.watcher.monitor()
 
         self.touch("fixtures/a.txt")
-        time.sleep(0.5)
+        time.sleep(2)
         self.assertEqual(1, self.watcher.num_runs)
         
         self.watcher.stop_monitor()

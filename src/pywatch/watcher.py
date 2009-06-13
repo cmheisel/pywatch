@@ -41,11 +41,12 @@ class Watcher(object):
     def _monitor_till_stopped(self):
         while self._monitor_continously:
             self.monitor_once()
-            time.sleep(.01)
+            time.sleep(1)
 
     def monitor_once(self, execute=True):
         for f in self.files:
             mtime = os.stat(f).st_mtime
+
             if f not in self.mtimes.keys():
                 self.mtimes[f] = mtime
                 continue
