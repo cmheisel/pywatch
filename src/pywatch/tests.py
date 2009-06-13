@@ -2,18 +2,23 @@ import os
 import time
 import unittest
 
-from watcher import Watcher
+from pywatch.watcher import Watcher
 
 class WatcherTest(unittest.TestCase):
     def touch(self, filename):
         os.utime(filename, None)
 
     def setUp(self):
-        self.watcher = Watcher(cmds = ["python fixtures/sample.py", ])
+        base_path = os.path.abspath(os.path.realpath(os.path.dirname(__file__)))
+        self.fixtures_path = os.path.join(base_path, 'fixtures')
+        self.watcher = Watcher()
 
     def tearDown(self):
         self.watcher.stop_monitor()
         del self.watcher
+
+    def fixture(self, filename):
+        return os.path.join(self.fixtures_path, filename)
 
     def test_add_files(self):
         """When files are added, either at init or via add_files
@@ -21,13 +26,13 @@ class WatcherTest(unittest.TestCase):
         shouldn't be reflected."""
         
         self.assertEqual(0, len(self.watcher.files))
-        self.watcher.add_files("fixtures/a.txt", "fixtures/b.txt")
+        self.watcher.add_files(self.fixture("a.txt"), self.fixture("b.txt"))
         self.assertEqual(2, len(self.watcher.files))
        
-        self.watcher.add_files("fixtures/c.txt")
+        self.watcher.add_files(self.fixture("c.txt"))
         self.assertEqual(3, len(self.watcher.files))
 
-        w = Watcher(files=["fixtures/a.txt", "fixtures/b.txt", "fixtures/c.txt"])
+        w = Watcher(files=[self.fixture("a.txt"), self.fixture("b.txt"), self.fixture("c.txt")])
         self.assertEqual(3, len(w.files))
    
     def test_add_cmds(self):
@@ -37,11 +42,11 @@ class WatcherTest(unittest.TestCase):
        
         w = Watcher()
         self.assertEqual(0, len(w.cmds))
-        w.add_cmds("python fixtures/sample.py", "./fixtures/sample.py")
+        w.add_cmds("python %s" % self.fixture('sample.py'), self.fixture('sample.py'))
         self.assertEqual(2, len(w.cmds))
        
 
-        w = Watcher(cmds=["python fixtures/sample.py"])
+        w = Watcher(cmds=["python %s" % self.fixture('sample.py')])
         self.assertEqual(1, len(w.cmds))
 
 
@@ -52,14 +57,14 @@ class WatcherTest(unittest.TestCase):
 
         self.assertEqual(0, self.watcher.num_runs)
 
-        self.watcher.add_files("fixtures/a.txt", "fixtures/b.txt")
+        self.watcher.add_files(self.fixture("a.txt"), self.fixture("b.txt"))
         self.assertEqual(0, self.watcher.num_runs)
 
-        self.touch("fixtures/a.txt") 
+        self.touch(self.fixture("a.txt")) 
         self.watcher.monitor_once()
         self.assertEqual(1, self.watcher.num_runs)
 
-        self.touch("fixtures/b.txt")
+        self.touch(self.fixture("b.txt"))
         self.watcher.monitor_once()
         self.assertEqual(2, self.watcher.num_runs)
 
@@ -70,10 +75,10 @@ class WatcherTest(unittest.TestCase):
         """Watcher.monitor() should run continously executing the command
         list whenever files change."""
 
-        self.watcher.add_files("fixtures/a.txt", "fixtures/b.txt", "fixtures/c.txt")
+        self.watcher.add_files(self.fixture("a.txt"), self.fixture("b.txt"), self.fixture("c.txt"))
         self.watcher.monitor()
 
-        self.touch("fixtures/a.txt")
+        self.touch(self.fixture("a.txt"))
         time.sleep(2)
         self.assertEqual(1, self.watcher.num_runs)
         
