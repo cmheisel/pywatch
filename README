@@ -12,6 +12,10 @@ or otherwise.
 See pywatch.autotest for an example of a continously running
 watch-and-runner.
 
+Changes in 0.2
+--------------
+* Fixed missing os import in setup.py
+
 Changes in 0.1
 --------------
 * Initial release of python module

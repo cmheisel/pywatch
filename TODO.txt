@@ -1,3 +1,3 @@
-* Fix os error in setup.py
 * Add a pywatch command
 * pywatch command should go to users bin directory on install
+* Add directory watching support
