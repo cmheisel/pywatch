@@ -1,5 +1,5 @@
 if __name__ == "__main__":
-    import watcher
+    from pywatch import watcher
 
     files = ("tests.py", "watcher.py")
     cmds = ("clear", "python tests.py", )

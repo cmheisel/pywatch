@@ -1,0 +1,17 @@
+pywatch
+=======
+A python clone (almost) of the Linux watch command.
+
+The pywatch.watcher.Watcher class can be told to watch a set of files,
+and given a set of commands to run whenever any of those files change.
+
+It was inspired by Ruby's ZenTest, but while it can be used for testing,
+pywatch is intended to run any command when files change... test runners
+or otherwise.
+
+See pywatch.autotest for an example of a continously running
+watch-and-runner.
+
+Changes in 0.1
+--------------
+* Initial release of python module
