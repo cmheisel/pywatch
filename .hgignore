@@ -4,3 +4,13 @@ syntax: glob
 *.elc
 *.pyc
 *~
+*.swp
+.installed.cfg
+build
+bin
+develop-eggs
+dist
+downloads
+eggs
+parts
+src/*.egg-info
