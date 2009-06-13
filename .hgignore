@@ -13,4 +13,6 @@ dist
 downloads
 eggs
 parts
+python-log.txt
+pip-log.txt
 src/*.egg-info

@@ -12,6 +12,7 @@ class WatcherTest(unittest.TestCase):
         self.watcher = Watcher(cmds = ["python fixtures/sample.py", ])
 
     def tearDown(self):
+        self.watcher.stop_monitor()
         del self.watcher
 
     def test_add_files(self):
@@ -77,6 +78,9 @@ class WatcherTest(unittest.TestCase):
         self.assertEqual(1, self.watcher.num_runs)
         
         self.watcher.stop_monitor()
+
+def test_suite():
+    return unittest.makeSuite(WatcherTest)
 
 if __name__ == "__main__":
     unittest.main()
