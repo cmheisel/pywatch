@@ -6,7 +6,7 @@ def read(fname):
 
 setup(
     name = "pywatch",
-    version = "0.1",
+    version = "0.2",
     url = 'http://bitbucket.org/cmheisel/pywatch/',
     license = 'MIT',
     description = "Runs arbitrary commands if files specified to be watched change.",
