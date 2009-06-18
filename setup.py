@@ -28,6 +28,8 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python',
         'Topic :: Software Development :: Libraries :: Python Modules',
-    ]
+    ],
+
+    scripts=['scripts/pywatch'],
 )
 

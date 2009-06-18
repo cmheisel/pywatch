@@ -1,2 +1,1 @@
-* pywatch command should go to users bin directory on install
 * Add directory watching support
