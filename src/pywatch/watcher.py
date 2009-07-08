@@ -45,7 +45,12 @@ class Watcher(object):
 
     def monitor_once(self, execute=True):
         for f in self.files:
-            mtime = os.stat(f).st_mtime
+            try:
+                mtime = os.stat(f).st_mtime
+            except OSError:
+                #The file might be right in the middle of being written so sleep
+                time.sleep(1)
+                mtime = os.stat(f).st_mtime
 
             if f not in self.mtimes.keys():
                 self.mtimes[f] = mtime
