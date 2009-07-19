@@ -6,8 +6,8 @@ def read(fname):
 
 setup(
     name = "pywatch",
-    version = "0.3",
-    url = 'http://bitbucket.org/cmheisel/pywatch/',
+    version = "0.3.1",
+    url = 'http://heisel.org/blog/code/pywatch/',
     license = 'MIT',
     description = "Runs arbitrary commands if files specified to be watched change.",
     long_description = read('README'),
