@@ -23,6 +23,11 @@ Options:
 
 Changelog
 ---------
+0.3.1
+~~~~~
+* Changed setup.py to include proper url
+* Added error catching for os.stat calls 
+* pywatch with no args displays usage
 
 0.3
 ~~~
