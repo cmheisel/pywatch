@@ -22,6 +22,9 @@ def main(args=None):
                       help="Output timestamp when commands are run.")
     options, args = parser.parse_args(args)
 
+    if len(args) < 2:
+        print parser.error("You must provide a shell command and at least one file.")
+
     cmds = [args[0], ]
     files = args[1:]
     w = Watcher(cmds=cmds, files=files, verbose=options.verbose)
