@@ -1,3 +1,5 @@
+VERSION = "0.3.2"
+
 import sys
 
 from optparse import OptionParser
@@ -20,7 +22,16 @@ def main(args=None):
                       dest="verbose",
                       default=False,
                       help="Output timestamp when commands are run.")
+    parser.add_option("--version",
+                      action="store_true",
+                      dest="version",
+                      default=False,
+                      help="Output verion number and exit.")
     options, args = parser.parse_args(args)
+
+    if options['version']:
+        print "pywatch %s" % VERSION
+        sys.exit(0)
 
     if len(args) < 2:
         print parser.error("You must provide a shell command and at least one file.")
@@ -29,3 +40,4 @@ def main(args=None):
     files = args[1:]
     w = Watcher(cmds=cmds, files=files, verbose=options.verbose)
     w.run_monitor()
+    sys.exit(0)

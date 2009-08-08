@@ -20,9 +20,14 @@ Usage: pywatch [options] "command" file1 file2 ...
 Options:
   -h, --help     show this help message and exit
   -v, --verbose  Output timestamp when commands are run.
+  --version      Output version number and exit
 
 Changelog
 ---------
+0.3.2
+~~~~~
+* Added --version
+
 0.3.1
 ~~~~~
 * Changed setup.py to include proper url
