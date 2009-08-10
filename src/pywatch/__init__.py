@@ -29,7 +29,7 @@ def main(args=None):
                       help="Output verion number and exit.")
     options, args = parser.parse_args(args)
 
-    if options['version']:
+    if options.version:
         print "pywatch %s" % VERSION
         sys.exit(0)
 
