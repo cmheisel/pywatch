@@ -17,8 +17,20 @@ class WatcherTest(unittest.TestCase):
         self.watcher.stop_monitor()
         del self.watcher
 
-    def fixture(self, filename):
-        return os.path.join(self.fixtures_path, filename)
+    def fixture(self, *filenames):
+        return os.path.join(self.fixtures_path, *filenames)
+
+    def test_directories(self):
+        self.watcher.add_files(self.fixture("subdir"))
+        self.assert_(len(self.watcher.files) > 1, "Expected more than 1 file, %s watched" % len(self.watcher.files))
+
+        self.touch(self.fixture("subdir", "bar.txt")) 
+        self.watcher.monitor_once()
+        self.assertEqual(1, self.watcher.num_runs)
+
+        self.touch(self.fixture("subdir", "subsubdir", "baz.txt"))
+        self.watcher.monitor_once()
+        self.assertEqual(2, self.watcher.num_runs)
 
     def test_add_files(self):
         """When files are added, either at init or via add_files

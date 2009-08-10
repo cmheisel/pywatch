@@ -68,7 +68,22 @@ class Watcher(object):
         self.num_runs += 1
         return self.num_runs
 
+    def walk_dirs(self, dirnames):
+        dir_files = []
+        for dirname in dirnames:
+            for path, dirs, files in os.walk(dirname):
+                files = [ os.path.join(path, f) for f in files ]
+                dir_files.extend(files)
+                dir_files.extend(self.walk_dirs(dirs))
+        return dir_files
+
     def add_files(self, *files):
+        dirs = [ os.path.realpath(f) for f in files if os.path.isdir(f) ]
+        files = [ os.path.realpath(f) for f in files if os.path.isfile(f) ]
+
+        dir_files = self.walk_dirs(dirs)
+        files.extend(dir_files)
+
         valid_files = [ os.path.realpath(f) for f in files if os.path.exists(f) and os.path.isfile(f) ]
         unique_files = [ f for f in valid_files if f not in self.files ]
         self.files = self.files + unique_files
