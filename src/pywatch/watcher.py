@@ -57,6 +57,7 @@ class Watcher(object):
                 continue
             
             if mtime > self.mtimes[f]:
+                if self.verbose: print "File changed: %s" % os.path.realpath(f)
                 self.mtimes[f] = mtime
                 if execute:
                     self.execute()
