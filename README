@@ -24,6 +24,10 @@ Options:
 
 Changelog
 ---------
+0.4
+~~~
+* Directories are now walked recursively and all files are added and watched
+
 0.3.2
 ~~~~~
 * Added --version
