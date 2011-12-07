@@ -4,9 +4,11 @@ from setuptools import setup, find_packages
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+tests_require = ['mock']
+
 setup(
     name = "pywatch",
-    version = "0.4",
+    version = "0.5",
     url = 'http://heisel.org/blog/code/pywatch/',
     license = 'MIT',
     description = "Runs arbitrary commands if files specified to be watched change.",
