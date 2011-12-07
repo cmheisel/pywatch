@@ -1,6 +1,7 @@
 import os
 import time
 import unittest
+from mock import patch
 
 from pywatch.watcher import Watcher
 
@@ -95,6 +96,20 @@ class WatcherTest(unittest.TestCase):
         self.assertEqual(1, self.watcher.num_runs)
         
         self.watcher.stop_monitor()
+
+    def test_clear_terminal_by_default(self):
+        with patch('pywatch.watcher.os.system') as mocked_system:
+            self.watcher.execute()
+            mocked_system.assert_called_with('clear')
+
+    def test_dont_clear_terminal_when_set(self):
+        with patch('pywatch.watcher.os.system') as mocked_system:
+            self.watcher.clear = False
+            self.watcher.cmds = ['']
+            self.watcher.execute()
+            mocked_system.assert_called_once_with('')
+
+            
 
 def test_suite():
     return unittest.makeSuite(WatcherTest)

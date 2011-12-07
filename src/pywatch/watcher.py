@@ -4,7 +4,7 @@ import threading
 import time
 
 class Watcher(object):
-    def __init__(self, files=None, cmds=None, verbose=False):
+    def __init__(self, files=None, cmds=None, verbose=False, clear=True):
         self.files = [] 
         self.cmds = []
         self.num_runs = 0
@@ -12,6 +12,7 @@ class Watcher(object):
         self._monitor_continously = False 
         self._monitor_thread = None
         self.verbose = verbose
+        self.clear = clear
     
         if files: self.add_files(*files)
         if cmds: self.add_cmds(*cmds)
@@ -65,6 +66,8 @@ class Watcher(object):
 
     def execute(self):
         if self.verbose: print "Running commands at %s" % (datetime.datetime.now(), )
+        if self.clear:
+            os.system('clear')
         [ os.system(cmd) for cmd in self.cmds ]
         self.num_runs += 1
         return self.num_runs
