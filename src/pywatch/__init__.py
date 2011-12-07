@@ -1,4 +1,4 @@
-VERSION = "0.4"
+VERSION = "0.5"
 
 import sys
 
@@ -27,6 +27,10 @@ def main(args=None):
                       dest="version",
                       default=False,
                       help="Output verion number and exit.")
+    parser.add_option("--no-clear",
+                      action="store_true",
+                      default=True,
+                      help="Don't clear the terminal when files change.")
     options, args = parser.parse_args(args)
 
     if options.version:
@@ -38,6 +42,7 @@ def main(args=None):
 
     cmds = [args[0], ]
     files = args[1:]
-    w = Watcher(cmds=cmds, files=files, verbose=options.verbose)
+
+    w = Watcher(cmds=cmds, files=files, verbose=options.verbose, clear=options.no_clear)
     w.run_monitor()
     sys.exit(0)
