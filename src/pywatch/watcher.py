@@ -1,3 +1,4 @@
+from __future__ import print_function
 import datetime
 import os
 import threading
@@ -5,15 +6,15 @@ import time
 
 class Watcher(object):
     def __init__(self, files=None, cmds=None, verbose=False, clear=True):
-        self.files = [] 
+        self.files = []
         self.cmds = []
         self.num_runs = 0
         self.mtimes = {}
-        self._monitor_continously = False 
+        self._monitor_continously = False
         self._monitor_thread = None
         self.verbose = verbose
         self.clear = clear
-    
+
         if files: self.add_files(*files)
         if cmds: self.add_cmds(*cmds)
 
@@ -56,16 +57,16 @@ class Watcher(object):
             if f not in self.mtimes.keys():
                 self.mtimes[f] = mtime
                 continue
-            
+
             if mtime > self.mtimes[f]:
-                if self.verbose: print "File changed: %s" % os.path.realpath(f)
+                if self.verbose: print("File changed: %s" % os.path.realpath(f))
                 self.mtimes[f] = mtime
                 if execute:
                     self.execute()
                     break
 
     def execute(self):
-        if self.verbose: print "Running commands at %s" % (datetime.datetime.now(), )
+        if self.verbose: print("Running commands at %s" % (datetime.datetime.now(), ))
         if self.clear:
             os.system('clear')
         [ os.system(cmd) for cmd in self.cmds ]

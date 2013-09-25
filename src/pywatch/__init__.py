@@ -1,3 +1,4 @@
+from __future__ import print_function
 VERSION = "0.5"
 
 import sys
@@ -34,11 +35,11 @@ def main(args=None):
     options, args = parser.parse_args(args)
 
     if options.version:
-        print "pywatch %s" % VERSION
+        print("pywatch %s" % VERSION)
         sys.exit(0)
 
     if len(args) < 2:
-        print parser.error("You must provide a shell command and at least one file.")
+        print(parser.error("You must provide a shell command and at least one file."))
 
     cmds = [args[0], ]
     files = args[1:]
