@@ -5,7 +5,7 @@ import threading
 import time
 
 class Watcher(object):
-    def __init__(self, files=None, cmds=None, verbose=False, clear=True):
+    def __init__(self, files=None, cmds=None, verbose=False, clear=False):
         self.files = []
         self.cmds = []
         self.num_runs = 0
