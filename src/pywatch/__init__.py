@@ -1,3 +1,4 @@
+from __future__ import print_function
 VERSION = "0.5"
 
 import sys
@@ -27,22 +28,22 @@ def main(args=None):
                       dest="version",
                       default=False,
                       help="Output verion number and exit.")
-    parser.add_option("--no-clear",
+    parser.add_option("--clear",
                       action="store_true",
-                      default=True,
-                      help="Don't clear the terminal when files change.")
+                      default=False,
+                      help="First clear the terminal when files change.")
     options, args = parser.parse_args(args)
 
     if options.version:
-        print "pywatch %s" % VERSION
+        print("pywatch %s" % VERSION)
         sys.exit(0)
 
     if len(args) < 2:
-        print parser.error("You must provide a shell command and at least one file.")
+        print(parser.error("You must provide a shell command and at least one file."))
 
     cmds = [args[0], ]
     files = args[1:]
 
-    w = Watcher(cmds=cmds, files=files, verbose=options.verbose, clear=options.no_clear)
+    w = Watcher(cmds=cmds, files=files, verbose=options.verbose, clear=options.clear)
     w.run_monitor()
     sys.exit(0)
