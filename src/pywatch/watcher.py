@@ -1,20 +1,55 @@
-from __future__ import print_function
 import datetime
 import os
 import threading
 import time
 
+class WatchNode( object ):
+    def __init__( self, fentry ): 
+        if not os.path.exists( fentry ): 
+            raise IOError( "Filesystem node does not exists" ) 
+        else:
+            self.name = os.path.abspath( fentry ) 
+            self.mtime = None 
+            self.children = None 
+
+            self.updateMTime()
+            if os.path.isdir( fentry ):
+                self.children = [] 
+                self.checkChildrenDiff()
+                
+    def updateMTime( self ):
+        mtime = None 
+        try:
+            mtime = os.stat( self.name ).st_mtime
+        except OSError:
+            #The file might be right in the middle of being written so sleep
+            time.sleep(1)
+            mtime = os.stat( self.name ).st_mtime
+
+        if self.mtime is not None and self.mtime == mtime:
+            return False
+
+        self.mtime = mtime
+        return True
+
+    def checkChildrenDiff( self ): 
+        children = os.listdir( self.name )
+        added = [ child for child in children if child not in self.children]
+        removed = [ child for child in self.children if child not in children] 
+        self.children = children
+        return (added,removed)
+
+
 class Watcher(object):
-    def __init__(self, files=None, cmds=None, verbose=False, clear=False):
-        self.files = []
+    def __init__(self, files=None, cmds=None, verbose=False):
+        self.files = [] 
+        self.dirs = { } 
         self.cmds = []
         self.num_runs = 0
-        self.mtimes = {}
-        self._monitor_continously = False
+        self._monitor_continously = False 
         self._monitor_thread = None
         self.verbose = verbose
-        self.clear = clear
-
+    
         if files: self.add_files(*files)
         if cmds: self.add_cmds(*cmds)
 
@@ -45,54 +80,74 @@ class Watcher(object):
             self.monitor_once()
             time.sleep(1)
 
-    def monitor_once(self, execute=True):
+    def monitor_once(self):
         for f in self.files:
-            try:
-                mtime = os.stat(f).st_mtime
-            except OSError:
-                #The file might be right in the middle of being written so sleep
-                time.sleep(1)
-                mtime = os.stat(f).st_mtime
+            if not os.path.exists( f.name ): 
+                self.fileRemoved( f.name )    
+            elif f.updateMTime():
+                if f.children is None: 
+                    self.fileChanged( f.name ) 
+                else: 
+                    added, removed = f.checkChildrenDiff() 
+                    for a in added: 
+                        self.fileAdded( os.path.join( f.name, a) ) 
+                    for r in removed: 
+                        self.fileRemoved( os.path.join( f.name, r ) ) 
 
-            if f not in self.mtimes.keys():
-                self.mtimes[f] = mtime
-                continue
+    def fileChanged( self, fname ): 
+        if self.verbose: print("---> File changed: %s" % fname ) 
+        self.execute( fname ) 
 
-            if mtime > self.mtimes[f]:
-                if self.verbose: print("File changed: %s" % os.path.realpath(f))
-                self.mtimes[f] = mtime
-                if execute:
-                    self.execute()
-                    break
+    def fileAdded( self, fname ): 
+        if self.verbose: print("---> File added %s" % fname ) 
+        self.execute( fname ) 
+        n = WatchNode( fname ) 
+        self.files.append( n ) 
 
-    def execute(self):
-        if self.verbose: print("Running commands at %s" % (datetime.datetime.now(), ))
-        if self.clear:
-            os.system('clear')
-        [ os.system(cmd) for cmd in self.cmds ]
+    def fileRemoved( self, fname ): 
+        if self.verbose: print("---> File removed %s" % fname ) 
+        # TODO: Make some action on removal 
+        for x in self.files: 
+            if x.name == fname: 
+                self.files.remove( x ) 
+                return
+        
+    def execute(self, targetFile ):
+        if self.verbose: print( "---> Running commands at %s" % datetime.datetime.now() )
+        for cmd in self.cmds: 
+            # for backward compat 
+            if cmd.__class__ == 'str':
+                os.system( cmd ) 
+            else: 
+                cmd.runCmds( targetFile ) 
+        
         self.num_runs += 1
         return self.num_runs
 
-    def walk_dirs(self, dirnames):
-        dir_files = []
+    def addNode( self, fname ):
+        # check it doesn't exists 
+        for x in self.files: 
+            if x.name == fname:
+                return 
+        n = WatchNode( fname ) 
+        self.files.append( n ) 
+
+    def addDirs(self, dirnames):
         for dirname in dirnames:
             for path, dirs, files in os.walk(dirname):
-                files = [ os.path.join(path, f) for f in files ]
-                dir_files.extend(files)
-                dir_files.extend(self.walk_dirs(dirs))
-        return dir_files
+                for f in files:
+                    self.addNode( os.path.join( path, f) )   
+                for d in dirs: 
+                    self.addNode( os.path.join( path, d) ) 
 
     def add_files(self, *files):
-        dirs = [ os.path.realpath(f) for f in files if os.path.isdir(f) ]
-        files = [ os.path.realpath(f) for f in files if os.path.isfile(f) ]
+        onlyfiles = [ os.path.realpath(f) for f in files if os.path.exists(f) and os.path.isfile(f) ]
+        for f in onlyfiles: 
+            self.addNode( f ) 
+        
+        onlydirs = [ os.path.realpath(f) for f in files if os.path.exists(f) and os.path.isdir(f) ]
+        self.addDirs(onlydirs)
 
-        dir_files = self.walk_dirs(dirs)
-        files.extend(dir_files)
-
-        valid_files = [ os.path.realpath(f) for f in files if os.path.exists(f) and os.path.isfile(f) ]
-        unique_files = [ f for f in valid_files if f not in self.files ]
-        self.files = self.files + unique_files
-        self.monitor_once(execute=False)
 
     def add_cmds(self, *cmds):
         unique_cmds = [ c for c in cmds if c not in self.cmds ]
