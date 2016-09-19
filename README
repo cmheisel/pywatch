@@ -22,6 +22,14 @@ Options:
   -v, --verbose  Output timestamp when commands are run.
   --version      Output version number and exit
 
+Installation
+------------
+
+To install pywatch as a global command, from this repository, use:
+
+    python2 setup.py install
+
+
 Changelog
 ---------
 0.4
