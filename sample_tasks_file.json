@@ -1,0 +1,34 @@
+{ 
+    "watchdir" : "C:/Users/dhontecillas/prg/projects/pixeloq/assets", 
+    "newfiles" : false, 
+    "commands" : { 
+        "type" : "type %(FF)s",
+        "copy" : "copy %(FF)s %(PXQBUILDDIR)s\\output\\%(F)s", 
+        "echo" : "echo %(FF)s",
+        "buildimages" : "%(PXQTOOLS)s\\imgtomesh\\imgtomesh.py *.png --indir %(P)s --outdir %(PXQBUILDDIR)s\\output --prefix %(BPC1)s_%(BPC0)s_%(SF)s",
+        "scaffoldData" : "dscaffold.py %(FF)s",    
+        "genappconfig" : "datagen.py %(FF)s jsonparse %(P)s\\..\\..\\..\\src\\Game\\ConfGen",
+        "genconfigdata" : "datagen.py %(FF)s jsonparse %(P)s\\..\\..\\..\\src\\Game\\ConfGen",
+        "genpixelconfig" : "datagen.py %(FF)s jsonparse %(P)s\\..\\..\\..\\src\\Render\\ConfGen" 
+    }, 
+    "matchers" : [ 
+        { "re"       : ".*assets.config.*\\.json", 
+          "commands" : [ "copy" ] 
+        }, 
+        { "re"       : ".*assets.materials.*", 
+          "commands" : [ "copy" ] 
+        },
+        { "re"       : ".*assets.images.*\\.png",
+          "commands" : [ "buildimages" ] 
+        },
+        { "re"       : ".*assets.config.defs.appconfig.dsca", 
+          "commands" : [ "scaffoldData", "genappconfig" ] 
+        },
+        { "re"       : ".assets.config.defs.configdata\\.dsca", 
+          "commands" : [ "scaffoldData", "genconfigdata" ] 
+        }, 
+        { "re"       : ".assets.config.defs.pixelconfig\\.dsca",
+          "commands" : [ "scaffoldData", "genpixelconfig" ] 
+        }
+    ]
+} 
